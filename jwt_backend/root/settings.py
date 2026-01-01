@@ -51,6 +51,16 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+
+    # Rate Limiting
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "60/min",
+        "user": "300/min",
+    },
 }
 
 SIMPLE_JWT = {
@@ -65,16 +75,24 @@ AUTH_USER_MODEL = 'api.User'
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'api.middleware.RefreshAccessTokenMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+    # Bot detection BEFORE auth
+    'api.middleware.bot_detection.BotDetectionMiddleware',
+
+    # Custom auth/token middleware
+    'api.middleware.auth_middleware.RefreshAccessTokenMiddleware',
+    
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
+
+
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -163,3 +181,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Set to True to bypass bot detection (for local dev/testing)
+BOT_DETECTION_DEV_MODE = True

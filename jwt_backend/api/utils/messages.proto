@@ -1,5 +1,33 @@
+/**
+ * @file messages.proto
+ * @description Defines the structured binary format for application responses.
+ * * @message GenericResponse
+ * This message serves as a generic wrapper for serialized response data.
+ * By encapsulating JSON strings within a Protobuf message, the system adds a 
+ * layer of binary obfuscation and provides a consistent interface for the 
+ * Gzip compression stage.
+ *
+ * @field payload (string)
+ * Holds the minified JSON string representing the actual response data.
+ * Assigned field number 1 for high-priority serialization.
+ *
+ * @example
+ * // Logical Representation:
+ * GenericResponse {
+ * payload: "{\"status\":\"success\",\"data\":[1,2,3]}"
+ * }
+ *
+ * @input_values
+ * - payload: Any valid UTF-8 string (typically minified JSON).
+ * * @output_format
+ * - Binary: Serialized using the Protobuf wire format (VARINT + Length-delimited).
+ */
+
 syntax = "proto3";
 
+package api.responses;
+
 message GenericResponse {
+    // The core data string, mapped to field index 1.
     string payload = 1;
 }
